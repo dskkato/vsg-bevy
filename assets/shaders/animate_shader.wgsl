@@ -74,5 +74,9 @@ fn fragment(in: VertexOutput) -> [[location(0)]] vec4<f32> {
     let ft = 2.0;
     let x = in.uv.x - 0.5;
     let amp = 0.5 + 0.5 * sin(2.0 * 3.1415 * (fx * x - ft * t));
+    
+    // Color correction
+    // https://sotrh.github.io/learn-wgpu/beginner/tutorial4-buffer/#color-correction
+    let amp = pow(amp, 2.2);
     return vec4<f32>(amp * oklab_to_linear_srgb(mixed), 1.0);
 }
