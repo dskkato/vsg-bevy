@@ -87,7 +87,15 @@ fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
         .insert(Grating);
 
     // camera
-    commands.spawn_bundle(OrthographicCameraBundle::new_3d());
+    commands.spawn_bundle(Camera3dBundle {
+        // transform: Transform::from_xyz(0.0, 0.0, 10.0).looking_at(Vec3::default(), Vec3::Y),
+        projection: OrthographicProjection {
+            scale: 1.0 / 400.0,
+            ..default()
+        }
+        .into(),
+        ..default()
+    });
     commands.insert_resource(param);
     commands.insert_resource(StimType::Grating);
 }
@@ -110,8 +118,8 @@ fn print_mouse_events_system(
     window_size: Res<WindowSize>,
 ) {
     for event in cursor_moved_events.iter() {
-        let x = 2.0 * event.position.x / window_size.0.x - 1.0;
-        let y = 2.0 * event.position.y / window_size.0.y - 1.0;
+        let x = 2.0 * (event.position.x / window_size.0.x - 0.5);
+        let y = 2.0 * (event.position.y / window_size.0.y - 0.5);
         param.pos.x = x;
         param.pos.y = y;
         info!("{:?}", event);

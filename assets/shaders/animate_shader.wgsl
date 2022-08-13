@@ -1,21 +1,23 @@
-#import bevy_pbr::mesh_view_bind_group
-#import bevy_pbr::mesh_struct
+#import bevy_pbr::mesh_types
+#import bevy_pbr::mesh_view_bindings
 
-[[group(1), binding(0)]]
+@group(1) @binding(0)
 var<uniform> mesh: Mesh;
 
+#import bevy_pbr::mesh_functions
+
 struct Vertex {
-    [[location(0)]] position: vec3<f32>;
-    [[location(1)]] normal: vec3<f32>;
-    [[location(2)]] uv: vec2<f32>;
+    @location(0) position: vec3<f32>,
+    @location(1) normal: vec3<f32>,
+    @location(2) uv: vec2<f32>,
 };
 
 struct VertexOutput {
-    [[builtin(position)]] clip_position: vec4<f32>;
-    [[location(0)]] uv: vec2<f32>;
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0) uv: vec2<f32>,
 };
 
-[[stage(vertex)]]
+@vertex
 fn vertex(vertex: Vertex) -> VertexOutput {
     let world_position = mesh.model * vec4<f32>(vertex.position, 1.0);
 
@@ -27,9 +29,9 @@ fn vertex(vertex: Vertex) -> VertexOutput {
 
 
 struct Time {
-    time_since_startup: f32;
+    time_since_startup: f32,
 };
-[[group(2), binding(0)]]
+@group(2) @binding(0)
 var<uniform> time: Time;
 
 
@@ -53,8 +55,8 @@ fn oklab_to_linear_srgb(c: vec3<f32>) -> vec3<f32> {
     );
 }
 
-[[stage(fragment)]]
-fn fragment(in: VertexOutput) -> [[location(0)]] vec4<f32> {
+@fragment
+fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
     let speed = 2.0;
     let t = time.time_since_startup;
     let t_1 = sin(t * speed) * 0.5 + 0.5;
@@ -73,6 +75,6 @@ fn fragment(in: VertexOutput) -> [[location(0)]] vec4<f32> {
     let fx = 4.0;
     let ft = 2.0;
     let x = in.uv.x - 0.5;
-    let amp = 0.5 + 0.5 * sin(2.0 * 3.1415 * (fx * x - ft * t));
-    return vec4<f32>(amp * oklab_to_linear_srgb(mixed), 1.0);
+    let amp = 0.5 + 0.25 * sin(2.0 * 3.1415 * (fx * x - ft * t));
+    return vec4<f32>(oklab_to_linear_srgb(amp * mixed), 1.0);
 }
